@@ -1,18 +1,16 @@
-import React from "react";
 import Label from "../../../components/Label";
 import Input from "../../../components/Input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { createUser } from "../api";
+import { updateUser } from "../api";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Link, useNavigate } from "react-router";
 
 const schema = z.object({
-  fullName: z.string().min(1),
-  email: z.email(),
   phoneNumber: z.e164(),
   jobTitle: z.string().min(1),
   cv: z
@@ -31,6 +29,10 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const CandidateForm = () => {
+  const { data: userData } = useQueryClient().getQueryData(["tempUser"]);
+
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -41,10 +43,11 @@ const CandidateForm = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: createUser,
+    mutationFn: updateUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["candidates"] });
       toast.success("You have successfully saved your data");
+      navigate("/candidate/dashboard");
     },
     onError: (error) => {
       toast.error(`An error has occured ${error}`);
@@ -52,31 +55,10 @@ const CandidateForm = () => {
   });
 
   const onSubmit = (data: FormValues) => {
-    mutation.mutate(data);
-    console.log({ ...data });
+    mutation.mutate({ data, id: userData.user.id });
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col my-4 mb-8">
-      <Label htmlFor="fullName">Full Name</Label>
-      <Input
-        id="fullName"
-        {...register("fullName")}
-        type="text"
-        placeholder="Enter your full name here"
-      />
-      {errors.fullName && (
-        <p className="mb-4 text-destructive">{errors.fullName.message}</p>
-      )}
-      <Label htmlFor="email">Email</Label>
-      <Input
-        id="email"
-        {...register("email")}
-        type="email"
-        placeholder="Enter your email here"
-      />
-      {errors.email && (
-        <p className="mb-4 text-destructive">{errors.email.message}</p>
-      )}
       <Label htmlFor="phoneNumber">Phone Number</Label>
       <Input
         id="phoneNumber"
@@ -109,9 +91,8 @@ const CandidateForm = () => {
       )}
       <Button
         disabled={mutation.isPending}
-        variant="outline"
         type="submit"
-        className="mt-1"
+        className="mt-2 cursor-pointer"
       >
         {mutation.isPending ? (
           <LoaderCircle className="animate-spin" />
@@ -119,6 +100,11 @@ const CandidateForm = () => {
           "Submit"
         )}
       </Button>
+      <Link to="/candidate/dashboard" className="block !w-full mt-2">
+        <Button type="submit" variant="outline" className="cursor-pointer">
+          Skip
+        </Button>
+      </Link>
     </form>
   );
 };
