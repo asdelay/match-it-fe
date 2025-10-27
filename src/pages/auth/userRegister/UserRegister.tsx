@@ -1,7 +1,7 @@
 import Input from "@/components/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Label from "@/components/Label";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import z from "zod";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { registerUser } from "@/pages/auth/api/index";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const schema = z.object({
   fullName: z.string().min(2),
@@ -19,8 +20,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const UserLogin = () => {
+  const { setAuth } = useAuthStore();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const {
     register,
@@ -34,8 +35,7 @@ const UserLogin = () => {
     mutationFn: registerUser,
     onSuccess: (data) => {
       toast.success("You have successfully registered");
-      queryClient.setQueryData(["tempUser"], data);
-
+      setAuth(data.data.accessToken, data.data.user);
       navigate("/auth/user/additional");
     },
     onError: (error: {

@@ -1,21 +1,18 @@
-import axios from "axios";
+import type { FormValues } from "../account/formSchema"
+import { axiosInstance } from "@/api/axiosInstace";
+export const updateUser = ({data, id}: {data: FormValues, id: number}) => {
+    const formData = new FormData()
+    for (const [key, value] of Object.entries(data)) {
+        if(value && value !== undefined) {
+            formData.append(key, value);
+        }
+    }
+    
+    const userData = axiosInstance.patch(`/user/${id}`, formData)
+    return userData;
+}
 
-export const updateUser = async ({data, id}:{data: any, id: number}) => {
-  console.log(`user id: `,id)
-  const formData = new FormData();
-
-  // append all text fields
-  formData.append("phoneNumber", data.phoneNumber);
-  formData.append("jobTitle", data.jobTitle);
-
-  // append the file (this is your blob)
-  formData.append("cv", data.cv);
-
-  const res = await axios.patch(
-    `${import.meta.env.VITE_BASE_URL}/user/${id}`,
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
-
-  return res.data;
-};
+export const logout = (id: number) => {
+    const userData = axiosInstance.post(`/auth/logout/${id}`)
+    return userData
+}

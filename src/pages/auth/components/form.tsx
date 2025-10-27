@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const schema = z.object({
-  phoneNumber: z.e164(),
+  phoneNumber: z.e164("Incorrect phone number"),
   jobTitle: z.string().min(1),
   cv: z
     .any()
@@ -26,10 +27,10 @@ const schema = z.object({
     ),
 });
 
-type FormValues = z.infer<typeof schema>;
+export type FormValues = z.infer<typeof schema>;
 
 const CandidateForm = () => {
-  const { data: userData } = useQueryClient().getQueryData(["tempUser"]);
+  const userId = useAuthStore((state) => state.user?.id);
 
   const navigate = useNavigate();
 
@@ -55,7 +56,7 @@ const CandidateForm = () => {
   });
 
   const onSubmit = (data: FormValues) => {
-    mutation.mutate({ data, id: userData.user.id });
+    mutation.mutate({ data, id: userId as number });
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col my-4 mb-8">

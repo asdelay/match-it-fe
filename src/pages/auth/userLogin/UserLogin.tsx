@@ -1,7 +1,7 @@
 import Input from "@/components/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Label from "@/components/Label";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import z from "zod";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { loginUser } from "@/pages/auth/api/index";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const schema = z.object({
   email: z.email().min(2),
@@ -18,6 +19,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const UserLogin = () => {
+  const { setAuth } = useAuthStore();
   const navigate = useNavigate();
 
   const {
@@ -28,13 +30,11 @@ const UserLogin = () => {
     resolver: zodResolver(schema),
   });
 
-  const queryClient = useQueryClient();
-
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
       toast.success("You have successfully logged in");
-      queryClient.setQueryData(["tempUser"], data);
+      setAuth(data.data.accessToken, data.data.user);
       navigate("/candidate/dashboard");
     },
     onError: (error: {
@@ -75,17 +75,18 @@ const UserLogin = () => {
           {errors.password && (
             <p className="mb-4 text-destructive">{errors.password.message}</p>
           )}
-          <Button
-            disabled={mutation.isPending}
-            variant="outline"
-            type="submit"
-            className="mt-1"
-          >
+          <Button disabled={mutation.isPending} type="submit" className="mt-1">
             {mutation.isPending ? (
               <LoaderCircle className="animate-spin" />
             ) : (
               "Submit"
             )}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/auth/user/forgot-password")}
+          >
+            Forgot yout password?
           </Button>
         </form>
         <p className="mt-2 text-sm">

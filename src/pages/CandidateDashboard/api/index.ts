@@ -1,8 +1,9 @@
-import axios from "axios"
+import { axiosInstance } from "@/api/axiosInstace"
+import type { FullUser } from "@/types"
 
-export const getUser = (id: number) => {
+export const getUser = (id: number): Promise<{ data: FullUser }> => {
     console.log('id', id)
-    const user = axios.get(`${import.meta.env.VITE_BASE_URL}/user/${id}`)
+    const user = axiosInstance.get(`/user/${id}`)
 
     return user
 }

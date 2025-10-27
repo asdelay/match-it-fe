@@ -1,4 +1,4 @@
-import CandidateForm from "@/pages/candidate/components/form";
+import CandidateForm from "@/pages/auth/components/form";
 
 const Additional = () => {
   return (

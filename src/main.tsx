@@ -13,6 +13,10 @@ import CandidateDashboard from "./pages/CandidateDashboard/CandidateDashboard.ts
 import UserRegister from "./pages/auth/userRegister/UserRegister.tsx";
 import UserLogin from "./pages/auth/userLogin/UserLogin.tsx";
 import Additional from "./pages/auth/additional/Additional.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import Account from "./pages/candidate/account/Account.tsx";
+import ForgotPassword from "./pages/auth/forgot-password/ForgotPassword.tsx";
+import ResetPassword from "./pages/auth/resetPassword/ResetPassword.tsx";
 
 const queryClient = new QueryClient();
 
@@ -25,25 +29,44 @@ createRoot(document.getElementById("root")!).render(
           <Route
             path="/"
             element={
-              <div>
+              <>
                 <Navbar />
-
                 <Outlet />
-              </div>
+              </>
             }
           >
             <Route index element={<Landing />} />
-            <Route path="/candidate" element={<Candidate />}></Route>
             <Route
-              path="/candidate/dashboard"
-              element={<CandidateDashboard />}
-            ></Route>
-            <Route path="/candidate/interview" element={<Interview />}></Route>
+              path="/candidate"
+              element={
+                <ProtectedRoute>
+                  <Candidate />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<CandidateDashboard />}></Route>
+              <Route path="interview" element={<Interview />}></Route>
+              <Route path="settings" element={<h1>Settings</h1>}></Route>
+              <Route path="account" element={<Account />}></Route>
+            </Route>
+
             <Route path="/employer" element={<Employer />}></Route>
           </Route>
-          <Route path="/auth/user/login" element={<UserLogin />} />
-          <Route path="/auth/user/register" element={<UserRegister />} />
-          <Route path="/auth/user/additional" element={<Additional />} />
+          <Route
+            path="/auth/user"
+            element={
+              <>
+                <Navbar />
+                <Outlet />
+              </>
+            }
+          >
+            <Route path="login" element={<UserLogin />} />
+            <Route path="register" element={<UserRegister />} />
+            <Route path="additional" element={<Additional />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password/" element={<ResetPassword />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

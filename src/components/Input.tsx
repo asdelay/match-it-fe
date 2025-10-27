@@ -4,7 +4,11 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {}
 
 const Input: FC<InputProps> = (props) => {
   return (
-    <input className="p-4 border-1 border-[#1a1a1a] rounded-xl" {...props} />
+    <input
+      className="p-4 border-1 border-[#1a1a1a] rounded-xl"
+      autoComplete="default"
+      {...props}
+    />
   );
 };
 
