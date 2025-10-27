@@ -4,12 +4,12 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import Landing from "./pages/landing/Landing.tsx";
 import Candidate from "./pages/candidate/Candidate.tsx";
 import Navbar from "./components/Navbar.tsx";
-import Interview from "./pages/interview/Interview.tsx";
+import Interview from "./pages/candidate/interview/Interview.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Employer from "./pages/employer/Employer.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import { Toaster } from "sonner";
-import CandidateDashboard from "./pages/CandidateDashboard/CandidateDashboard.tsx";
+import CandidateDashboard from "./pages/candidate/dashboard/CandidateDashboard.tsx";
 import UserRegister from "./pages/auth/userRegister/UserRegister.tsx";
 import UserLogin from "./pages/auth/userLogin/UserLogin.tsx";
 import Additional from "./pages/auth/additional/Additional.tsx";
@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import Account from "./pages/candidate/account/Account.tsx";
 import ForgotPassword from "./pages/auth/forgot-password/ForgotPassword.tsx";
 import ResetPassword from "./pages/auth/resetPassword/ResetPassword.tsx";
+import Settings from "./pages/candidate/settings/Settings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -46,7 +47,7 @@ createRoot(document.getElementById("root")!).render(
             >
               <Route path="dashboard" element={<CandidateDashboard />}></Route>
               <Route path="interview" element={<Interview />}></Route>
-              <Route path="settings" element={<h1>Settings</h1>}></Route>
+              <Route path="settings" element={<Settings />}></Route>
               <Route path="account" element={<Account />}></Route>
             </Route>
 

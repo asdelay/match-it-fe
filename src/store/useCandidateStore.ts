@@ -1,70 +1,60 @@
-import { create } from 'zustand';
 
+import { create } from 'zustand';
 interface Sections {
   title: string;
   items: SectionItem[];
 }
 
-interface SectionItem {
-  title:string;
+export interface SectionItem {
+  title: string;
   url: string;
-  isActive?: boolean;
 }
 
-interface AuthState {
-  data: {navMain: Sections[]}
-  setActiveNav: (activeTitle: string) => void;
+interface NavState {
+  data: { navMain: Sections[] };
+  activeUrl: string;
+  setActiveUrl: (url: string) => void;
+  setActiveByPathname: (pathname: string) => void;
 }
 
-export const useCandidateStore = create<AuthState>((set) => ({
-  data: {
-    navMain: [
-    {
-      title: "Main",
-      items: [
-        {
-          title: "Dashboard",
-          url: "dashboard",
-          isActive: true
-        },
-        {
-          title: "AI Interview",
-          url: "interview",
-        },
-      ],
-    },
-    {
-      title: "System",
-      items: [
-        {
-          title: "Settings",
-          url: "settings",
-        },
-
-        {
-          title: "Account",
-          url: "account",
-        },
-        {
-          title: "Night mode",
-          url: "#",
-        },
-      ],
-    },
-  ],
+const initialNav: Sections[] = [
+  {
+    title: 'Main',
+    items: [
+      { title: 'Dashboard', url: '/candidate/dashboard' },
+      { title: 'AI Interview', url: '/candidate/interview' },
+    ],
   },
-  setActiveNav: (activeTitle) =>
-    set((state) => ({
-      data: {
-        ...state.data,
-        navMain: state.data.navMain.map((section) => ({
-          ...section,
-          items: section.items.map((item) => ({
-            ...item,
-            isActive: item.title === activeTitle,
-          })),
-        })),
-      },
-    })),
-  
-}))
+  {
+    title: 'System',
+    items: [
+      { title: 'Settings', url: '/candidate/settings' },
+      { title: 'Account', url: '/candidate/account' },
+    ],
+  },
+];
+export const useCandidateStore = create<NavState>((set) => ({
+  data: { navMain: initialNav },
+  activeUrl: typeof window !== 'undefined' ? window.location.pathname : '/candidate/dashboard',
+  setActiveUrl: (url) => set({ activeUrl: url }),
+  setActiveByPathname: (pathname) => {
+    const flat = initialNav.flatMap((s) => s.items);
+
+    const exact = flat.find((i) => i.url === pathname);
+    if (exact) return set({ activeUrl: exact.url });
+
+    const byBase = flat.find((i) => pathname.startsWith(i.url) && i.url !== '#');
+    if (byBase) return set({ activeUrl: byBase.url });
+
+
+    set({ activeUrl: '/candidate/dashboard' });
+  },
+}));
+
+export const useActiveTitle = () => {
+  const {data, activeUrl} = useCandidateStore();
+
+  const allItems = data.navMain.flatMap(section => section.items)
+  const activeItem = allItems.find((item) => item.url === activeUrl);
+  return activeItem?.title || '';
+}

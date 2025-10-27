@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { getUser } from "@/pages/CandidateDashboard/api";
+import { getUser } from "@/pages/candidate/dashboard/api";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import EditSheet from "./EditSheet";
 import type { FullUser } from "@/types";
-import { logout } from "@/pages/candidate/api/index";
-import { Link, useNavigate } from "react-router";
-import { toast } from "sonner";
+import { Link } from "react-router";
+import { useMutations } from "./mutations";
 
 const Account = () => {
   const userId = useAuthStore((state) => state.user?.id);
@@ -17,19 +16,8 @@ const Account = () => {
     queryFn: () => getUser(userId as number),
     enabled: !!userId,
   });
-  const navigate = useNavigate();
 
-  const mutation = useMutation({
-    mutationFn: logout,
-    onSuccess: () => {
-      toast.success("You have successfully log out");
-      useAuthStore.getState().clearAuth();
-      navigate("/");
-    },
-    onError: (error) => {
-      toast.error(`Error during logout ${error}`);
-    },
-  });
+  const { logoutMutation, deleteAccountMutation } = useMutations();
 
   const userData = query.data?.data;
   if (!userId) return <p>Loading user...</p>;
@@ -37,8 +25,8 @@ const Account = () => {
   if (query.isError || !userData) return <p>Error loading user</p>;
 
   return (
-    <div className="mt-12 p-8 lg:px-16 flex flex-col w-full gap-2">
-      <div className="flex flex-col md:flex-row justify-between">
+    <div className="p-8 lg:px-16 flex flex-col w-full gap-2">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
         <div>
           <h3 className="text-2xl md:text-4xl font-bold">Account Settings</h3>
           <p className="text-ring">
@@ -49,8 +37,8 @@ const Account = () => {
           <EditSheet userData={userData} />
         </div>
       </div>
-      <Separator className="my-8" />
-      <div className="grid grid-cols-3 gap-4">
+      <Separator className="my-4" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="flex flex-col">
           <h4 className="font-semibold text-ring">Full Name</h4>
           <p>{userData?.fullName ?? "-"}</p>
@@ -88,20 +76,28 @@ const Account = () => {
       </div>
       <Separator className="my-8" />
 
+      <Link to="/auth/user/forgot-password">
+        <Button className="mt-4 md:mt-0" variant="outline">
+          Reset Password
+        </Button>
+      </Link>
+      <Separator className="my-8" />
       <div className="flex justify-between">
-        <Link to="/auth/user/forgot-password">
-          <Button className="mt-4 md:mt-0" variant="outline">
-            Reset Password
-          </Button>
-        </Link>
-
         <Button
-          disabled={mutation.isPending}
+          disabled={logoutMutation.isPending}
           className="mt-4 md:mt-0"
           variant="destructive"
-          onClick={() => mutation.mutate(userId)}
+          onClick={() => logoutMutation.mutate(userId)}
         >
-          {mutation.isPending ? "Loading..." : "Log Out"}
+          {logoutMutation.isPending ? "Loading..." : "Log Out"}
+        </Button>
+        <Button
+          disabled={deleteAccountMutation.isPending}
+          className="mt-4 md:mt-0"
+          variant="destructive"
+          onClick={() => deleteAccountMutation.mutate(userId)}
+        >
+          {deleteAccountMutation.isPending ? "Loading..." : "Delete Account"}
         </Button>
       </div>
     </div>

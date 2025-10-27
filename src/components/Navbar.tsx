@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { ModeToggle } from "./mode-toggle";
 import { Hexagon } from "lucide-react";
 
 const Navbar = () => {
@@ -8,7 +7,6 @@ const Navbar = () => {
       <Link to="/">
         <Hexagon className="duration-300 hover:rotate-90" />
       </Link>
-      <ModeToggle />
     </nav>
   );
 };

@@ -16,3 +16,8 @@ export const logout = (id: number) => {
     const userData = axiosInstance.post(`/auth/logout/${id}`)
     return userData
 }
+
+export const deleteAccount = (id: number) => {
+    const status = axiosInstance.delete(`/user/${id}`)
+    return status
+}
