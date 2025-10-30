@@ -6,27 +6,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
+import { useTranslation } from "react-i18next";
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
-
+  const { t } = useTranslation();
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline">
-            <span>Toggle theme</span>
+            <span>{t(`settings.toggleTheme`)}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setTheme("light")}>
-            Light
+            {t("settings.light")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setTheme("dark")}>
-            Dark
+            {t("settings.dark")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setTheme("system")}>
-            System
+            {t("settings.system")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

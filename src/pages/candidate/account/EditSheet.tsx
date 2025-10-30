@@ -20,6 +20,9 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../api";
 import { toast } from "sonner";
+import { LoaderCircle } from "lucide-react";
+import type { AxiosError } from "axios";
+import { useTranslation } from "react-i18next";
 
 interface EditSheetProps {
   userData: FullUser;
@@ -27,6 +30,7 @@ interface EditSheetProps {
 
 const EditSheet: FC<EditSheetProps> = ({ userData }) => {
   const userId = useAuthStore((state) => state.user?.id);
+  const { t } = useTranslation();
 
   const {
     register,
@@ -41,10 +45,10 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
     mutationFn: updateUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", userId] });
-      toast.success("You have successfully updated your data");
+      toast.success(t("toast.updatedDataSuccess"));
     },
-    onError: (error) => {
-      toast.error(`An error has occured ${error}`);
+    onError: (e: AxiosError<{ message: string }>) => {
+      toast.error(`Error! ${e?.response?.data.message || e.message}`);
     },
   });
 
@@ -54,19 +58,17 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className="mt-4 md:mt-0">Edit Profile</Button>
+        <Button className="mt-4 md:mt-0">{t("account.edit")}</Button>
       </SheetTrigger>
       <SheetContent className="overflow-y-scroll">
         <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </SheetDescription>
+          <SheetTitle>{t("account.edit")}</SheetTitle>
+          <SheetDescription>{t("account.editDesc")}</SheetDescription>
         </SheetHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid flex-1 auto-rows-min gap-6 px-4">
             <div className="grid gap-3">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="fullName">{t("account.fullName")}</Label>
               <Input
                 id="fullName"
                 placeholder="John Doe"
@@ -80,7 +82,7 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
               )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="jobTitle">Job Title</Label>
+              <Label htmlFor="jobTitle">{t("account.jobTitle")}</Label>
               <Input
                 id="jobTitle"
                 placeholder="Software Developer"
@@ -94,7 +96,7 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
               )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <Label htmlFor="phoneNumber">{t("account.phoneNumber")}</Label>
               <Input
                 id="phoneNumber"
                 placeholder="+32470123456"
@@ -108,7 +110,7 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
               )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="cv">CV</Label>
+              <Label htmlFor="cv">{t("account.cv")}</Label>
               <Input type="file" id="cv" {...register("cv")} />
               {errors.cv && (
                 <p className="mb-4 text-destructive">
@@ -118,9 +120,15 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
             </div>
           </div>
           <SheetFooter className="mt-8">
-            <Button type="submit">Save changes</Button>
+            <Button type="submit" disabled={mutation.isPending}>
+              {mutation.isPending ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                t("account.save")
+              )}
+            </Button>
             <SheetClose asChild>
-              <Button variant="outline">Close</Button>
+              <Button variant="outline">{t("account.close")}</Button>
             </SheetClose>
           </SheetFooter>
         </form>

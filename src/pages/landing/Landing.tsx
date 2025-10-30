@@ -1,8 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
-import { motion, type Easing } from "framer-motion";
+import { motion, type Easing, type Variants } from "framer-motion";
+import MainSection from "./components/MainSection";
+import SmarterConnections from "./components/SmarterConnections";
+import JobSeekers from "./components/JobSeekers";
+import Employers from "./components/Employers";
+import Footer from "@/components/footer";
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
@@ -11,7 +14,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -23,65 +26,28 @@ const itemVariants = {
 const Landing = () => {
   return (
     <motion.div
-      className="py-12 flex justify-center items-center"
+      className="mt-12 flex flex-col items-center gap-16"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <motion.div
-        className="flex flex-col items-center gap-2 w-[400px] px-12 lg:w-[900px]"
-        variants={containerVariants}
-      >
-        <motion.div className="flex flex-col" variants={itemVariants}>
-          <motion.h1 className="mt-4 font-bold !text-8xl lg:text-6xl font-sans tracking-wider">
-            MATCH IT
-          </motion.h1>
-          <motion.p className="mb-8 text-sm">
-            powered by <span className="font-bold">Eburon</span>
-          </motion.p>
-        </motion.div>
-
-        <motion.h3
-          className="!text-6xl font-semibold text-secondary-foreground mb-12 text-center"
-          variants={itemVariants}
-        >
-          Unlock Your Potential with <br />{" "}
-          <span
-            style={{
-              backgroundSize: "200% 200%",
-              animation: "gradientMove 3s ease infinite",
-            }}
-            className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
-          >
-            AI-Powered Matching
-          </span>
-        </motion.h3>
-
-        <motion.p
-          className="text-2xl text-center text-ring"
-          variants={itemVariants}
-        >
-          Match-It revolutionizes hiring for job seekers and companies with
-          intelligent AI matching, personalized recommendations, and
-          cutting-edge AI interviews.
-        </motion.p>
-
-        <motion.div
-          className="mt-10 flex gap-8 justify-between items-center"
-          variants={itemVariants}
-        >
-          <Link to="/candidate/dashboard">
-            <Button className="cursor-pointer">
-              <p className="font-semibold">Find Your Dream Job</p>
-            </Button>
-          </Link>
-          <Link to="/employer">
-            <Button className="cursor-pointer font-semibold">
-              Hire Top Talent
-            </Button>
-          </Link>
-        </motion.div>
-      </motion.div>
+      <MainSection
+        containerVariants={containerVariants}
+        itemVariants={itemVariants}
+      />
+      <SmarterConnections
+        containerVariants={containerVariants}
+        itemVariants={itemVariants}
+      />
+      <JobSeekers
+        containerVariants={containerVariants}
+        itemVariants={itemVariants}
+      />
+      <Employers
+        containerVariants={containerVariants}
+        itemVariants={itemVariants}
+      />
+      <Footer />
     </motion.div>
   );
 };

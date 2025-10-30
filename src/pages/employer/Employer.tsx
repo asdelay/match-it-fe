@@ -1,4 +1,3 @@
-import React from "react";
 import CandidatesTable from "./components/candidateTable";
 
 const Employer = () => {

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Select,
   SelectContent,
@@ -9,14 +10,15 @@ import {
 } from "./ui/select";
 
 const LanguageSelect = () => {
+  const { t, i18n } = useTranslation();
   return (
-    <Select>
+    <Select onValueChange={(value) => i18n.changeLanguage(value)}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a language" />
+        <SelectValue placeholder={t("settings.selectLang")} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Language</SelectLabel>
+          <SelectLabel>{t("settings.lang")}</SelectLabel>
           <SelectItem value="en">English</SelectItem>
           <SelectItem value="nl">Nederlands</SelectItem>
           <SelectItem value="ua">Українська</SelectItem>

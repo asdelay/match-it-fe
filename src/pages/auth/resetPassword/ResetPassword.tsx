@@ -10,6 +10,7 @@ import { changePasswords } from "@/pages/auth/api";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import type { AxiosError } from "axios";
+import { LoaderCircle } from "lucide-react";
 
 const schema = z
   .object({
@@ -93,7 +94,11 @@ const ResetPassword = () => {
             </p>
           )}
           <Button disabled={mutation.isPending} type="submit">
-            {mutation.isPending ? "Loading..." : "Submit"}
+            {mutation.isPending ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Submit"
+            )}
           </Button>
           <Button type="reset" variant="outline">
             Clear

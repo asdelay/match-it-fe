@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useTranslation } from "react-i18next";
 
 export const description = "A clean performance area chart";
 
@@ -36,13 +37,12 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const PerformanceChart = () => {
+  const { t } = useTranslation();
   return (
     <Card className="border-none shadow-md">
       <CardHeader>
-        <CardTitle>Performance Chart</CardTitle>
-        <CardDescription>
-          Showing candidate's performance for the last 6 months
-        </CardDescription>
+        <CardTitle>{t("dashboard.chart")}</CardTitle>
+        <CardDescription>{t("dashboard.chartDesc")}</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -85,11 +85,11 @@ const PerformanceChart = () => {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month
+              {t("dashboard.trending")} 5.2% {t("dashboard.thisMonth")}
               <TrendingUp className="h-4 w-4 text-green-500" />
             </div>
             <div className="text-muted-foreground leading-none">
-              January – June 2025
+              {t("dashboard.time")}
             </div>
           </div>
         </div>

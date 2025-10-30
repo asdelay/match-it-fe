@@ -10,6 +10,7 @@ import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router";
 import { useAuthStore } from "@/store/useAuthStore";
+import type { AxiosError } from "axios";
 
 const schema = z.object({
   phoneNumber: z.e164("Incorrect phone number"),
@@ -30,7 +31,8 @@ const schema = z.object({
 export type FormValues = z.infer<typeof schema>;
 
 const CandidateForm = () => {
-  const userId = useAuthStore((state) => state.user?.id);
+  const userId =
+    useAuthStore((state) => state.user?.id) || localStorage.getItem("userId");
 
   const navigate = useNavigate();
 
@@ -50,8 +52,9 @@ const CandidateForm = () => {
       toast.success("You have successfully saved your data");
       navigate("/candidate/dashboard");
     },
-    onError: (error) => {
-      toast.error(`An error has occured ${error}`);
+    onError: (e: AxiosError<{ message: string }>) => {
+      toast.error(`Error! ${e?.response?.data.message || e.message}`);
+      navigate("/candidate/dashboard");
     },
   });
 
@@ -59,53 +62,65 @@ const CandidateForm = () => {
     mutation.mutate({ data, id: userId as number });
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col my-4 mb-8">
-      <Label htmlFor="phoneNumber">Phone Number</Label>
-      <Input
-        id="phoneNumber"
-        {...register("phoneNumber")}
-        type="text"
-        placeholder="Enter your phone number here"
-      />
-      {errors.phoneNumber && (
-        <p className="mb-4 text-destructive">{errors.phoneNumber.message}</p>
-      )}
-      <Label htmlFor="jobTitle">Desired job title</Label>
-      <Input
-        id="jobTitle"
-        {...register("jobTitle")}
-        type="text"
-        placeholder="Enter your desired role here"
-      />
-      {errors.jobTitle && (
-        <p className="mb-4 text-destructive">{errors.jobTitle.message}</p>
-      )}
-      <Label htmlFor="cv">CV</Label>
-      <Input
-        id="cv"
-        {...register("cv")}
-        type="file"
-        placeholder="Upload your CV here"
-      />
-      {errors.cv && (
-        <p className="mb-4 text-destructive">{errors.cv.message as string}</p>
-      )}
-      <Button
-        disabled={mutation.isPending}
-        type="submit"
-        className="mt-2 cursor-pointer"
-      >
-        {mutation.isPending ? (
-          <LoaderCircle className="animate-spin" />
-        ) : (
-          "Submit"
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-4 my-4"
+    >
+      <div className="flex flex-col">
+        <Label htmlFor="phoneNumber">Phone Number</Label>
+        <Input
+          id="phoneNumber"
+          {...register("phoneNumber")}
+          type="text"
+          placeholder="Enter your phone number here"
+        />
+        {errors.phoneNumber && (
+          <p className="mb-4 text-destructive">{errors.phoneNumber.message}</p>
         )}
-      </Button>
-      <Link to="/candidate/dashboard" className="block !w-full mt-2">
-        <Button type="submit" variant="outline" className="cursor-pointer">
-          Skip
+      </div>
+      <div className="flex flex-col">
+        <Label htmlFor="jobTitle">Desired job title</Label>
+        <Input
+          id="jobTitle"
+          {...register("jobTitle")}
+          type="text"
+          placeholder="Enter your desired role here"
+        />
+        {errors.jobTitle && (
+          <p className="mb-4 text-destructive">{errors.jobTitle.message}</p>
+        )}
+      </div>
+      <div className="flex flex-col">
+        <Label htmlFor="cv">CV</Label>
+        <Input
+          id="cv"
+          {...register("cv")}
+          type="file"
+          placeholder="Upload your CV here"
+        />
+        {errors.cv && (
+          <p className="mb-4 text-destructive">{errors.cv.message as string}</p>
+        )}
+      </div>
+
+      <div className="flex flex-col">
+        <Button
+          disabled={mutation.isPending}
+          type="submit"
+          className="mt-2 cursor-pointer"
+        >
+          {mutation.isPending ? (
+            <LoaderCircle className="animate-spin" />
+          ) : (
+            "Submit"
+          )}
         </Button>
-      </Link>
+        <Link to="/candidate/dashboard" className="block !w-full mt-2">
+          <Button type="submit" variant="outline" className="cursor-pointer">
+            Skip
+          </Button>
+        </Link>
+      </div>
     </form>
   );
 };

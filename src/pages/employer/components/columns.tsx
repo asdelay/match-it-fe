@@ -4,6 +4,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Link } from "react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +16,7 @@ import {
 
 export type Candidate = {
   id: number;
-  cv: string;
+  cvUrl: string;
   fullName: string;
   phoneNumber: string;
   jobTitle: string;
@@ -81,19 +82,20 @@ export const columns: ColumnDef<Candidate>[] = [
     header: "Phone Number",
   },
   {
-    accessorKey: "cv",
+    accessorKey: "cvUrl",
     header: "CV",
     cell: ({ row }) => {
-      const cvUrl = row.getValue("cv") as string;
-      return (
-        <a
-          href={cvUrl}
+      const cvUrl = row.getValue("cvUrl") as string;
+      return cvUrl ? (
+        <Link
+          to={cvUrl}
           target="_blank"
-          rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
         >
           View CV
-        </a>
+        </Link>
+      ) : (
+        ""
       );
     },
   },

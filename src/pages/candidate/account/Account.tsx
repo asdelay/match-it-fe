@@ -7,8 +7,11 @@ import EditSheet from "./EditSheet";
 import type { FullUser } from "@/types";
 import { Link } from "react-router";
 import { useMutations } from "./mutations";
+import { LoaderCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Account = () => {
+  const { t } = useTranslation();
   const userId = useAuthStore((state) => state.user?.id);
 
   const query = useQuery<{ data: FullUser }>({
@@ -20,18 +23,16 @@ const Account = () => {
   const { logoutMutation, deleteAccountMutation } = useMutations();
 
   const userData = query.data?.data;
-  if (!userId) return <p>Loading user...</p>;
-  if (query.isLoading) return <p>Loading...</p>;
-  if (query.isError || !userData) return <p>Error loading user</p>;
-
+  if (query.isLoading || !userId || !userData)
+    return <LoaderCircle className="animate-spin" />;
   return (
     <div className="p-8 lg:px-16 flex flex-col w-full gap-2">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
         <div>
-          <h3 className="text-2xl md:text-4xl font-bold">Account Settings</h3>
-          <p className="text-ring">
-            Manage your profile information and preferences.
-          </p>
+          <h3 className="text-2xl md:text-4xl font-bold">
+            {t("account.accountSettings")}
+          </h3>
+          <p className="text-ring">{t("account.manageAccount")}</p>
         </div>
         <div>
           <EditSheet userData={userData} />
@@ -40,33 +41,35 @@ const Account = () => {
       <Separator className="my-4" />
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="flex flex-col">
-          <h4 className="font-semibold text-ring">Full Name</h4>
+          <h4 className="font-semibold text-ring">{t("account.fullName")}</h4>
           <p>{userData?.fullName ?? "-"}</p>
         </div>
         <div className="flex flex-col">
-          <h4 className="font-semibold text-ring">Email</h4>
+          <h4 className="font-semibold text-ring">{t("account.email")}</h4>
           <p>{userData?.email ?? "-"}</p>
         </div>
         <div className="flex flex-col">
-          <h4 className="font-semibold text-ring">CV</h4>
+          <h4 className="font-semibold text-ring">{t("account.cv")}</h4>
           {userData.cvUrl ? (
             <Link target="_blank" to={userData.cvUrl}>
-              View CV
+              {t("account.viewCV")}
             </Link>
           ) : (
-            ""
+            "-"
           )}
         </div>
         <div className="flex flex-col">
-          <h4 className="font-semibold text-ring">Job Title</h4>
+          <h4 className="font-semibold text-ring">{t("account.jobTitle")}</h4>
           <p>{userData?.jobTitle ?? "-"}</p>
         </div>
         <div className="flex flex-col">
-          <h4 className="font-semibold text-ring">Phone Number</h4>
+          <h4 className="font-semibold text-ring">
+            {t("account.phoneNumber")}
+          </h4>
           <p>{userData?.phoneNumber ?? "-"}</p>
         </div>
         <div className="flex flex-col">
-          <h4 className="font-semibold text-ring">Last update</h4>
+          <h4 className="font-semibold text-ring">{t("account.lastUpdate")}</h4>
           <p>
             {userData?.updatedAt
               ? new Date(userData.updatedAt).toLocaleDateString()
@@ -78,7 +81,7 @@ const Account = () => {
 
       <Link to="/auth/user/forgot-password">
         <Button className="mt-4 md:mt-0" variant="outline">
-          Reset Password
+          {t("account.resetPassword")}
         </Button>
       </Link>
       <Separator className="my-8" />
@@ -87,17 +90,31 @@ const Account = () => {
           disabled={logoutMutation.isPending}
           className="mt-4 md:mt-0"
           variant="destructive"
-          onClick={() => logoutMutation.mutate(userId)}
+          onClick={() => {
+            logoutMutation.mutate(userId);
+            localStorage.removeItem("userId");
+          }}
         >
-          {logoutMutation.isPending ? "Loading..." : "Log Out"}
+          {logoutMutation.isPending ? (
+            <LoaderCircle className="animate-spin" />
+          ) : (
+            t("account.logOut")
+          )}
         </Button>
         <Button
           disabled={deleteAccountMutation.isPending}
           className="mt-4 md:mt-0"
           variant="destructive"
-          onClick={() => deleteAccountMutation.mutate(userId)}
+          onClick={() => {
+            deleteAccountMutation.mutate(userId);
+            localStorage.removeItem("userId");
+          }}
         >
-          {deleteAccountMutation.isPending ? "Loading..." : "Delete Account"}
+          {deleteAccountMutation.isPending ? (
+            <LoaderCircle className="animate-spin" />
+          ) : (
+            t("account.deleteAccount")
+          )}
         </Button>
       </div>
     </div>

@@ -2,27 +2,29 @@ import SettingItem from "./SettingItem";
 import { ModeToggle } from "@/components/mode-toggle";
 import LanguageSelect from "@/components/language-toggle";
 import EmailToggle from "@/components/ui/email-toggle";
+import { useTranslation } from "react-i18next";
 
 const SettingItems = () => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4">
       <SettingItem
-        name="Dark theme"
-        description="Toggle between light and dark themes"
+        name={t("settings.darkTheme")}
+        description={t("settings.darkThemeDesc")}
       >
         <ModeToggle />
       </SettingItem>
 
       <SettingItem
-        name="Language"
-        description="Select your preferred language."
+        name={t("settings.lang")}
+        description={t("settings.selectLang")}
       >
         <LanguageSelect />
       </SettingItem>
 
       <SettingItem
-        name="Email Notifications"
-        description="Receive updates and announcements via email."
+        name={t("settings.emailNotifications")}
+        description={t("settings.receiveNotifications")}
       >
         <EmailToggle />
       </SettingItem>

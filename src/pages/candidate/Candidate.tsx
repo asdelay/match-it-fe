@@ -12,16 +12,19 @@ import {
 import { useActiveTitle, useCandidateStore } from "@/store/useCandidateStore";
 import { Separator } from "@radix-ui/react-separator";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router";
 
 const Candidate = () => {
   const { pathname } = useLocation();
   const { setActiveByPathname } = useCandidateStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setActiveByPathname(pathname);
   }, [pathname, setActiveByPathname]);
   const acitveTitle = useActiveTitle();
+  console.log(acitveTitle);
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -35,7 +38,7 @@ const Candidate = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                {acitveTitle}
+                {t(`sidebar.${acitveTitle}`)}
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

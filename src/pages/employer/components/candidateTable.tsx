@@ -8,7 +8,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -29,21 +28,42 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LoaderCircle } from "lucide-react";
 
 import { columns, type Candidate } from "./columns";
 import { useQuery } from "@tanstack/react-query";
 import { getAllCandidates } from "../api";
 
 export default function CandidatesTable() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["candidates"],
-    queryFn: getAllCandidates,
+  const [page, setPage] = React.useState(1);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [search, setSearch] = React.useState("");
+  const [debouncedSearch, setDebouncedSearch] = React.useState(search);
+  const limit = 10;
+  const { data, isFetching } = useQuery({
+    queryKey: ["candidates", page, sorting, debouncedSearch],
+    queryFn: () =>
+      getAllCandidates(
+        page,
+        limit,
+        sorting.length > 0 && sorting[0].id ? sorting[0].id : "jobTitle",
+        sorting.length > 0 && sorting[0].desc ? "desc" : "asc",
+        debouncedSearch
+      ),
   });
 
-  const candidates: Candidate[] = data?.data ?? [];
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 500);
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
+  const candidates: Candidate[] = data?.data?.users ?? [];
+
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -54,10 +74,12 @@ export default function CandidatesTable() {
   const table = useReactTable({
     data: candidates,
     columns,
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -67,22 +89,21 @@ export default function CandidatesTable() {
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: { pageIndex: page - 1, pageSize: limit },
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
-
-  return (
+  return isFetching ? (
+    <div className="min-h-[400px] flex justify-center items-center">
+      <LoaderCircle className="animate-spin" />
+    </div>
+  ) : (
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter by name..."
-          value={
-            (table.getColumn("fullName")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("fullName")?.setFilterValue(event.target.value)
-          }
+          placeholder="Filter by job title..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
           className="max-w-sm"
         />
         <DropdownMenu>
@@ -163,20 +184,25 @@ export default function CandidatesTable() {
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} selected.
         </div>
+        <div className="text-muted-foreground flex-1 text-sm">
+          {(data?.data.page - 1) * data?.data.limit} to{" "}
+          {data?.data.page * data?.data.limit} shown of {data?.data.total}
+        </div>
+
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => setPage((prev) => prev - 1)}
+            disabled={data?.data.page === 1}
           >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={data?.data.page === data?.data.totalPages}
           >
             Next
           </Button>

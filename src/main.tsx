@@ -18,6 +18,7 @@ import Account from "./pages/candidate/account/Account.tsx";
 import ForgotPassword from "./pages/auth/forgot-password/ForgotPassword.tsx";
 import ResetPassword from "./pages/auth/resetPassword/ResetPassword.tsx";
 import Settings from "./pages/candidate/settings/Settings.tsx";
+import "./i18n.ts";
 
 const queryClient = new QueryClient();
 

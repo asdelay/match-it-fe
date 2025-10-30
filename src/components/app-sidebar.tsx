@@ -15,9 +15,11 @@ import {
 import { Hexagon } from "lucide-react";
 import { Link } from "react-router";
 import { useCandidateStore } from "@/store/useCandidateStore";
+import { useTranslation } from "react-i18next";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data, activeUrl, setActiveUrl } = useCandidateStore();
+  const { t } = useTranslation();
 
   return (
     <Sidebar {...props}>
@@ -34,7 +36,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+            <SidebarGroupLabel>{t(`sidebar.${item.title}`)}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {item.items.map((item) => {
@@ -46,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         isActive={isActive}
                         onClick={() => setActiveUrl(item.url)}
                       >
-                        <Link to={item.url}>{item.title}</Link>
+                        <Link to={item.url}>{t(`sidebar.${item.title}`)}</Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import { registerUser } from "@/pages/auth/api/index";
 import { useAuthStore } from "@/store/useAuthStore";
+import type { AxiosError } from "axios";
 
 const schema = z.object({
   fullName: z.string().min(2),
@@ -36,13 +37,11 @@ const UserLogin = () => {
     onSuccess: (data) => {
       toast.success("You have successfully registered");
       setAuth(data.data.accessToken, data.data.user);
+      localStorage.setItem("userId", data.data.user.id);
       navigate("/auth/user/additional");
     },
-    onError: (error: {
-      response: { data: { message: string } };
-      message: string;
-    }) => {
-      toast.error(`Error! ${error.response.data.message || error.message}`);
+    onError: (e: AxiosError<{ message: string }>) => {
+      toast.error(`Error! ${e?.response?.data.message || e.message}`);
     },
   });
 

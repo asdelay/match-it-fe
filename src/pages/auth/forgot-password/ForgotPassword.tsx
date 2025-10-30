@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { passwordResetVerify } from "@/pages/auth/api";
 import { useNavigate } from "react-router";
+import { LoaderCircle } from "lucide-react";
 
 const schema = z.object({
   email: z.email().min(2),
@@ -52,7 +53,11 @@ const ForgotPassword = () => {
             <p className="mb-4 text-destructive">{errors.email.message}</p>
           )}
           <Button disabled={mutation.isPending} type="submit">
-            {mutation.isPending ? "Loading..." : "Submit"}
+            {mutation.isPending ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Submit"
+            )}
           </Button>
           <Button variant="outline" onClick={() => navigate(-1)}>
             Cancel

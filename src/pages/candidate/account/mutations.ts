@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { deleteAccount, logout } from "@/pages/candidate/api";
 import { useNavigate } from "react-router";
+import type { AxiosError } from "axios";
 
 export const useMutations = () => {
     const navigate = useNavigate();
@@ -13,8 +14,9 @@ export const useMutations = () => {
       useAuthStore.getState().clearAuth();
       navigate("/");
     },
-    onError: (error) => {
-      toast.error(`Error during logout ${error}`);
+    onError: (e: AxiosError<{ message: string }>) => {
+      toast.error(`Error! ${e?.response?.data.message || e.message}`);
+      navigate('/candidate/account')
     },
   });
 
@@ -25,8 +27,9 @@ export const useMutations = () => {
       useAuthStore.getState().clearAuth();
       navigate("/");
     },
-    onError: (error) => {
-      toast.error(`Error during account deletion ${error}`);
+    onError: (e: AxiosError<{ message: string }>) => {
+      toast.error(`Error! ${e?.response?.data.message || e.message}`);
+      navigate('/candidate/account')
     },
   });
   return {logoutMutation, deleteAccountMutation}
