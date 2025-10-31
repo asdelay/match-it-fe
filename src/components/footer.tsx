@@ -1,5 +1,3 @@
-import React from "react";
-
 const Footer = () => {
   return (
     <div className="w-full p-12 rounded-t-2xl bg-card flex justify-between font-semibold">

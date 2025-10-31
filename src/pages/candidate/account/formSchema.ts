@@ -2,11 +2,9 @@ import z from "zod";
 
 export const schema = z.object({
   fullName: z.preprocess(
-    (val) => (val === "" ? undefined : val), 
-    z
-      .string()
-      .min(2, "Full name must contain at least 2 characters")
-      .optional()),
+    (val) => (val === "" ? undefined : val as string | undefined),
+    z.string().min(2, "Full name must contain at least 2 characters").optional()
+  ),
   phoneNumber: z.preprocess(val => (val === "" ? undefined : val),z.e164("Incorrect phone number").optional()),
   jobTitle: z.preprocess(val => (val === "" ? undefined : val),z.string().min(1).optional()),
   cv: z

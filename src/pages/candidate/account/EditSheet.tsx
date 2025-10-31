@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { FC } from "react";
 import type { FullUser } from "@/types";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { schema, type FormValues } from "./formSchema";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -37,7 +37,21 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as Resolver<
+      {
+        cv: unknown;
+        fullName?: string | undefined;
+        phoneNumber?: string | undefined;
+        jobTitle?: string | undefined;
+      },
+      unknown,
+      {
+        cv: unknown;
+        fullName?: string | undefined;
+        phoneNumber?: string | undefined;
+        jobTitle?: string | undefined;
+      }
+    >,
   });
 
   const queryClient = useQueryClient();
@@ -52,7 +66,7 @@ const EditSheet: FC<EditSheetProps> = ({ userData }) => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
     mutation.mutate({ data, id: userId as number });
   };
   return (

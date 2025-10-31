@@ -1,4 +1,4 @@
-import React, { type FC, type LabelHTMLAttributes } from "react";
+import React, { type FC } from "react";
 
 interface LabelProps {
   htmlFor: string;
