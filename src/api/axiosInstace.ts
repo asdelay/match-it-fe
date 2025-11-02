@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
       } catch {
         useAuthStore.getState().clearAuth();
         toast.error('Your session expired')
-        window.location.href = '/auth/login';
+        window.location.href = '/auth/user/login';
       }
     }
     return Promise.reject(error);
